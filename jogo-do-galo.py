@@ -1,6 +1,37 @@
 import os
 import random
 
+def VitoriaV2(situacaoJogo,jogadores):
+    vitoria = [[0,1,2],[0,3,6],[0,4,8],[1,4,7],[2,4,7],[2,5,8],[3,4,5],[6,7,8]]
+    jogadorBola = []
+    jogadorCruz = []
+    for i in range(9):
+        if situacaoJogo[i] == chr(216): # armazena as posições onde tem "O" 
+            jogadorBola.append(i)
+        if situacaoJogo[i] == "X": # armazena as posições onde tem "X"
+            jogadorCruz.append(i)
+    if len(jogadorBola) > 2:
+        for i in range(len(vitoria)):
+            possuiUmValorBola = 0
+            possuiUmValorCruz = 0
+            for j in range(len(vitoria[i])):
+                if vitoria[i][j] in jogadorBola:
+                    possuiUmValorBola+=1
+                    if possuiUmValorBola == len(vitoria[i]):
+                        return jogadores[0]
+                if vitoria[i][j] in jogadorCruz:
+                    possuiUmValorCruz+=1
+                    if possuiUmValorCruz == len(vitoria[i]):
+                        return jogadores[1]
+    return "O jogo não acabou"
+
+
+
+
+
+
+
+
 # Verifica se o jogo foi vencido
 def Vitoria(situacaoJogo,jogadores):
     jogadorBola = []
@@ -151,7 +182,7 @@ while jogarNovamente == "S": # vericar se o jogador quer jogar novamente
                 else:
                     situacaoJogo = OcuparCasa(situacaoJogo, rodada%2, campoSelecionado) # atuzaliza a variavel situacaoJogo para as novas definições escolhidas pelo usuario
 
-                    vencedor = Vitoria(situacaoJogo, jogadores) # verifica se teve um vencerdor
+                    vencedor = VitoriaV2(situacaoJogo, jogadores) # verifica se teve um vencerdor
                     os.system("cls")
                     if vencedor == jogadores[0]:
                         Tabuleiro(situacaoJogo)
@@ -177,7 +208,7 @@ while jogarNovamente == "S": # vericar se o jogador quer jogar novamente
                 else:
                     situacaoJogo = OcuparCasa(situacaoJogo, rodada%2, campoSelecionado) # atuzaliza a variavel situacaoJogo para as novas definições escolhidas pelo usuario
 
-                    vencedor = Vitoria(situacaoJogo, jogadores) # verifica se teve um vencerdor
+                    vencedor = VitoriaV2(situacaoJogo, jogadores) # verifica se teve um vencerdor
                     os.system("cls")
                 
                     if vencedor == jogadores[0]:
