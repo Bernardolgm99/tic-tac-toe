@@ -50,7 +50,7 @@ def ElementsNotAreadyUsed(list,listToCompare):
             return listToCompare[i]+1
 
 
-def IA(gameStatus):
+def AI(gameStatus):
     winningPossibilities1 = [[0,1,2],[0,3,6],[0,4,8],[1,4,7],[2,4,7],[2,5,8],[3,4,5],[6,7,8]]
     winningPossibilities2 = [[0,1,2],[0,3,6],[0,4,8],[1,4,7],[2,4,7],[2,5,8],[3,4,5],[6,7,8]]
     player1 = []
@@ -99,15 +99,15 @@ def IA(gameStatus):
             return randomSelect
 
 
-def IAGame():
+def AIGame():
     gameStatus = ["1","2","3","4","5","6","7","8","9"] # posição das casas do jogo
-    players=["IA"]
+    players=["AI"]
     
     # Adiciona o jogador ao jogo
-    players.insert(0,(input("Nome do jogador: ")))
+    players.insert(0,(input("Player name: ")))
     
     os.system("cls")
-    print ("Escolha um número da tabela")
+    print ("Select a number from the board: ")
 
     # While onde acontece o jogo
     round=0
@@ -115,11 +115,11 @@ def IAGame():
         Board(gameStatus) #Print do mapa
         try:
             if round%2 == 0:
-                numberSelected = int(input("Time " + players[round%2] + ":")) # Jogador seleciona onde quer jogar
+                numberSelected = int(input("Round " + str(round+1) + "\n" + players[round%2] + "'s turn:")) # Jogador seleciona onde quer jogar
                 if str(numberSelected) not in gameStatus and  numberSelected < 10:
                     round-=1
                     os.system("cls")
-                    print("Is aready selected")
+                    print("It's aready selected")
                 elif numberSelected > 10:
                     round-=1
                     os.system("cls")
@@ -137,7 +137,7 @@ def IAGame():
                         Board(gameStatus)
                         print ("Draw")
             else:
-                numberSelected = IA(gameStatus) # IA toma decisão de valor que irá jogar
+                numberSelected = AI(gameStatus) # IA toma decisão de valor que irá jogar
                 gameStatus = SelectPosition(gameStatus, round%2, numberSelected) # Atuzaliza a variavel gameStatus para as novas definições escolhidas pelo usuario
 
                 winner = WinningDetection(gameStatus, round) # Verifica se teve um vencerdor
@@ -150,6 +150,8 @@ def IAGame():
         except ValueError:
             print("Invalid value")
             round-=1
+        except:
+            print("Something is wrong!")
         round+=1
 
 
@@ -159,10 +161,10 @@ def VsGame():
     
     # Adiciona os jogadores ao jogo
     for i in range(2):
-        players.append(input("Nome do jogador " + str(i+1) + ": "))
+        players.append(input("Name of player " + str(i+1) + ": "))
     
     os.system("cls")
-    print ("Escolha um número da tabela")
+    print ("Select a number from the board")
 
     # While onde acontece o jogo
     round=0
@@ -170,11 +172,11 @@ def VsGame():
         Board(gameStatus) #Print do mapa
         try:
             if round%2 == 0:
-                numberSelected = int(input("Time " + players[round%2] + ":")) # Jogador seleciona onde quer jogar
+                numberSelected = int(input("Round " + str(round+1) + "\n" + players[round%2] + "'s turn:")) # Jogador seleciona onde quer jogar
                 if str(numberSelected) not in gameStatus and  numberSelected < 10:
                     round-=1
                     os.system("cls")
-                    print("Is aready selected")
+                    print("It's aready selected")
                 elif numberSelected > 10:
                     round-=1
                     os.system("cls")
@@ -192,11 +194,11 @@ def VsGame():
                         Board(gameStatus)
                         print ("Draw")
             else:
-                numberSelected = int(input("Time " + players[round%2] + ":")) # Jogador seleciona onde quer jogar
+                numberSelected = int(input("Round " + str(round+1) + "\n" + players[round%2] + "'s turn:")) # Jogador seleciona onde quer jogar
                 if str(numberSelected) not in gameStatus and  numberSelected < 10:
                     round-=1
                     os.system("cls")
-                    print("Is aready selected")
+                    print("It's aready selected")
                 elif numberSelected > 10:
                     round-=1
                     os.system("cls")
@@ -211,8 +213,51 @@ def VsGame():
                         print("%s wins!!!" %(players[winner]))
                         break
         except ValueError:
-            print("Valor invalido")
+            print("Invalid value")
             round-=1
+        except:
+            print("Something is wrong!")
         round+=1
 
-IAGame()
+def Main():
+    playAgain = True
+    askPlayAgain = ""
+    while playAgain != False:
+        try:
+            playAgainGameMode = True
+            if askPlayAgain == "":
+                selectMode = int(input("Which game mode do you wish to play?\n\n1 - Singleplayer\n2 - Multiplayer\n"))
+            if selectMode == 1:
+                while playAgainGameMode != False:
+                    os.system("cls")
+                    print("AI game mode!")
+                    AIGame()
+                    askPlayAgainGameMode = input("Do you want to play vs AI again? (Y/N):")
+                    if askPlayAgainGameMode.upper() != "Y":
+                        playAgainGameMode = False
+            elif selectMode == 2:
+                while playAgainGameMode != False:
+                    os.system("cls")
+                    print("Vs game mode!")
+                    VsGame()
+                    askPlayAgainGameMode = input("Do you want to play vs another player again? (Y/N):")
+                    if askPlayAgainGameMode.upper() != "Y":
+                        playAgainGameMode = False
+            os.system("cls")  
+            askPlayAgain = input("Do you want to play Tic-Tac-Toe again? (Y/N):")
+            if askPlayAgain.upper() != "Y":
+                playAgain = False
+            else:
+                if selectMode == 1:
+                    selectMode = 2
+                elif selectMode == 2:
+                    selectMode = 1
+        except ValueError:
+            os.system("cls")
+            print("Invalid value. Try again!")
+        except:
+            os.system("cls")
+            print("Something is wrong!")
+
+os.system("cls")
+Main()
