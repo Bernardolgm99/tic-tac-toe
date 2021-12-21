@@ -2,14 +2,14 @@ import random
 import os
 
 
-#Detecta se o jogo foi vencido
+# Detecta se o jogo foi vencido por algum jogador
 def WinningDetection(gameStatus, round):
     winningPossibilities = [[0,1,2],[0,3,6],[0,4,8],[1,4,7],[2,4,6],[2,5,8],[3,4,5],[6,7,8]]
     if round > 2: 
         if round%2 == 0:                                                #Verifica se o jogador 1 ganhou
             player1 = []
             for i in range(9):                                          #Verifica onde o jogador 1 já marcou
-                if gameStatus[i] == chr(216):
+                if gameStatus[i] == "O":
                     player1.append(i)
             for i in range(len(winningPossibilities)):
                 winPlayer1 = 0
@@ -32,34 +32,45 @@ def WinningDetection(gameStatus, round):
                     return 1
     return "The game is not over yet"
 
-def Board(gameStatus): # executa o print do tabuleiro atualizado
+# Cria uma imagem no terminal da situação atual do tabuleiro
+def Board(gameStatus):
     print ("\t\t|\t\t|\n\t%s\t|\t%s\t|\t%s\n________________|_______________|________________\n\t\t|\t\t|\n\t%s\t|\t%s\t|\t%s\n________________|_______________|________________\n\t\t|\t\t|\n\t%s\t|\t%s\t|\t%s\n\t\t|\t\t|" %(gameStatus[0],gameStatus[1],gameStatus[2],gameStatus[3],gameStatus[4],gameStatus[5],gameStatus[6],gameStatus[7],gameStatus[8]))
 
+# Marca a posição selecionada pelo jogador
 def SelectPosition(gameStatus, player, numberSelected):
     if player == 1:
         gameStatus.insert(numberSelected-1,"X") # troca a posição numerica por "X"
         del gameStatus[numberSelected]
     elif player == 0:
-        gameStatus.insert(numberSelected-1,chr(216)) # troca a posição numerica por "O"
+        gameStatus.insert(numberSelected-1,"O") # troca a posição numerica por "O"
         del gameStatus[numberSelected]
     return gameStatus
 
+# Uma função criada, para ver onde já foi marcado em uma possibilidade de vitoria e retorna a posição que ainda não foi marcada
 def ElementsNotAreadyUsed(list,listToCompare):
     for i in range (len(listToCompare)):
         if listToCompare[i] not in list:
             return listToCompare[i]+1
 
-
-def AI(gameStatus):
-    winningPossibilities1 = [[0,1,2],[0,3,6],[0,4,8],[1,4,7],[2,4,7],[2,5,8],[3,4,5],[6,7,8]]
-    winningPossibilities2 = [[0,1,2],[0,3,6],[0,4,8],[1,4,7],[2,4,7],[2,5,8],[3,4,5],[6,7,8]]
+# Funionamento da IA            
+def AI(gameStatus,round):
+    winningPossibilities1 = [[0,1,2],[0,3,6],[0,4,8],[1,4,7],[2,4,6],[2,5,8],[3,4,5],[6,7,8]]
+    winningPossibilities2 = [[0,1,2],[0,3,6],[0,4,8],[1,4,7],[2,4,6],[2,5,8],[3,4,5],[6,7,8]]
     player1 = []
     player2 = []
-    for i in range(len(gameStatus)):
-        if gameStatus[i] == chr(216):
-            player1.append(i)
-        if gameStatus[i] == "X":
-            player2.append(i)
+    # Marca a situação de jogo do jogador "O" e jogador "X" em forma de motrar suas posições
+    if round%2 != 0:
+        for i in range(len(gameStatus)):
+            if gameStatus[i] == "O":
+                player1.append(i)
+            if gameStatus[i] == "X":
+                player2.append(i)
+    else:
+        for i in range(len(gameStatus)):
+            if gameStatus[i] == "X":
+                player1.append(i)
+            if gameStatus[i] == "O":
+                player2.append(i)
 
     # IA tenta ganhar
     #Remove onde o jogador 1 impede a IA de ganhar
@@ -98,13 +109,14 @@ def AI(gameStatus):
         if str(randomSelect) in gameStatus:
             return randomSelect
 
-
+# Modo de jogo contra a IA
 def AIGame():
     gameStatus = ["1","2","3","4","5","6","7","8","9"] # posição das casas do jogo
     players=["AI"]
-    
+    flipCoin = random.randint(0,1)
     # Adiciona o jogador ao jogo
-    players.insert(0,(input("Player name: ")))
+    players.insert(flipCoin,(input("Player name: ")))
+
     
     os.system("cls")
     print ("Select a number from the board: ")
@@ -112,9 +124,15 @@ def AIGame():
     # While onde acontece o jogo
     round=0
     while round != 9:
-        Board(gameStatus) #Print do mapa
+        turn = 0
+        if round%2 == 0:
+            turn = players[0]
+        else:
+            turn = players[1]
+        Board(gameStatus) # Print do tabuleiro
         try:
-            if round%2 == 0:
+            # Vez jogador
+            if turn != "AI":
                 numberSelected = int(input("Round " + str(round+1) + "\n" + players[round%2] + "'s turn:")) # Jogador seleciona onde quer jogar
                 if str(numberSelected) not in gameStatus and  numberSelected < 10:
                     round-=1
@@ -137,7 +155,8 @@ def AIGame():
                         Board(gameStatus)
                         print ("Draw")
             else:
-                numberSelected = AI(gameStatus) # IA toma decisão de valor que irá jogar
+            #Vez IA
+                numberSelected = AI(gameStatus,round) # IA toma decisão de valor que irá jogar
                 gameStatus = SelectPosition(gameStatus, round%2, numberSelected) # Atuzaliza a variavel gameStatus para as novas definições escolhidas pelo usuario
 
                 winner = WinningDetection(gameStatus, round) # Verifica se teve um vencerdor
@@ -147,6 +166,9 @@ def AIGame():
                     Board(gameStatus)
                     print("%s wins!!!" %(players[winner]))
                     break
+                if round == 8:
+                        Board(gameStatus)
+                        print ("Draw")
         except ValueError:
             print("Invalid value")
             round-=1
@@ -155,14 +177,23 @@ def AIGame():
         round+=1
 
 
+# Modo de jogo jogador vs jogador
 def VsGame():
     gameStatus = ["1","2","3","4","5","6","7","8","9"] # posição das casas do jogo
     players=[]
-    
     # Adiciona os jogadores ao jogo
     for i in range(2):
         players.append(input("Name of player " + str(i+1) + ": "))
-    
+    os.system("cls")
+    while True:
+        selectPlayer = input("Which player goes first?\n1 - %s\n2 - %s\n" %(players[0], players[1]))
+        if selectPlayer in ["1","2"]:
+            break
+        else:
+            os.system("cls")
+            print("Select a valid input, pls!!!")
+    if selectPlayer == "2":
+        players.reverse()
     os.system("cls")
     print ("Select a number from the board")
 
@@ -171,6 +202,7 @@ def VsGame():
     while round != 9:
         Board(gameStatus) #Print do mapa
         try:
+            # Vez jogador "O"
             if round%2 == 0:
                 numberSelected = int(input("Round " + str(round+1) + "\n" + players[round%2] + "'s turn:")) # Jogador seleciona onde quer jogar
                 if str(numberSelected) not in gameStatus and  numberSelected < 10:
@@ -194,6 +226,7 @@ def VsGame():
                         Board(gameStatus)
                         print ("Draw")
             else:
+            # Vez jogador "X"
                 numberSelected = int(input("Round " + str(round+1) + "\n" + players[round%2] + "'s turn:")) # Jogador seleciona onde quer jogar
                 if str(numberSelected) not in gameStatus and  numberSelected < 10:
                     round-=1
