@@ -180,11 +180,15 @@ def AIGame():
                                 Board(gameStatus)
                                 print ("Draw")
                 except ValueError:
+                    os.system("cls")
                     print("Invalid value")
                     round-=1
                 except:
+                    os.system("cls")
                     print("Something is wrong!")
                 round+=1
+            input("Press to continue...")
+            os.system("cls")
             while True:
                 menuVsGame = input("1 - Play again\n2 - Change player's name\n3 - Back to menu\n\n")
                 if menuVsGame in ["1","2","3"]:
@@ -211,7 +215,7 @@ def VsGame():
         #Onde inicia o jogo
         while True:
             while True:
-                selectPlayer = input("Which player goes first?\n1 - %s\n2 - %s\n3 - Random" %(players[0], players[1]))
+                selectPlayer = input("Which player goes first?\n1 - %s\n2 - %s\n3 - Random\n\n" %(players[0], players[1]))
                 if selectPlayer in ["1","2","3"]:
                     break
                 else:
@@ -273,9 +277,11 @@ def VsGame():
                                 print("%s wins!!!" %(players[winner]))
                                 break
                 except ValueError:
+                    os.system("cls")
                     print("Invalid value")
                     round-=1
                 except:
+                    os.system("cls")
                     print("Something is wrong!")
                 round+=1
             input("Press to continue...")
